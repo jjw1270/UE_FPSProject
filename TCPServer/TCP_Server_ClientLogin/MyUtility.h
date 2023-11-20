@@ -15,4 +15,3 @@ public:
 	static string Utf8ToMultibyte(const string& str);
 
 };
-
