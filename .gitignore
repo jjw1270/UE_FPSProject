@@ -72,3 +72,11 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+Package/*
+
+# Custom Ignores
+TCPServer/mysqlConnector/*
+TCPServer/TCP_Server_ClientLogin/x64/*
+TCPServer/TCP_Server_ClientLogin/config.txt
+TCPServer/TCP_Server_DediServer/*
