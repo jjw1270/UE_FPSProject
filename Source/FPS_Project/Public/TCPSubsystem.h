@@ -19,7 +19,7 @@ enum class EPacketType : uint16
 
 	S2C_CastMessage											= 10,
 
-	S2C_ConnectSuccess										= 100,			//not use in web server
+	S2C_ConnectSuccess										= 100,
 
 //----------------------------Login----------------------------------------------------
 	C2S_ReqSignIn											= 1000,
