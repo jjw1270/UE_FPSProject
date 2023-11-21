@@ -35,7 +35,13 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 
 	switch (PacketType)
 	{
-
+	case EPacket::C2S_Ping:
+		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_Ping, "반가워!");
+		if (!bSendSuccess)
+		{
+			cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+		}
+		break;
 	default:
 		break;
 	}
@@ -46,9 +52,9 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 
 unsigned WINAPI ServerThread(void* arg)
 {
-	SOCKET ClientSocket = *(SOCKET*)arg;
+	cout << "Thread Start" << endl;
 
-	printf("[%d] Server Thread Started\n", (unsigned short)ClientSocket);
+	SOCKET ClientSocket = *(SOCKET*)arg;
 	
 	// Recv Header
 	char HeaderBuffer[HeaderSize] = { 0, };
@@ -91,6 +97,12 @@ unsigned WINAPI ServerThread(void* arg)
 	delete[] Payload;
 	Payload = nullptr;
 
+	if (closesocket(ClientSocket) != SOCKET_ERROR)
+	{
+		cout << "Close Socket" << endl;
+	}
+
+	cout << "Thread End" << endl;
 	return 0;
 }
 
@@ -172,7 +184,6 @@ int main()
 	Timeout.tv_usec = 500;
 
 	cout << "Success!" << endl;
-	cout << "Wait for Connecting... " << endl;
 
 	while (true)
 	{
@@ -189,7 +200,7 @@ int main()
 
 		char IP[1024] = { 0, };
 		inet_ntop(AF_INET, &ClientSocketAddr.sin_addr.s_addr, IP, 1024);
-		printf("[%d] Connected : %s\n", (unsigned short)ClientSocket, IP);
+		cout << "[" << (int)ClientSocket << "] Connected!" << endl;
 
 		// create thread
 		_beginthreadex(nullptr, 0, ServerThread, (void*)&ClientSocket, 0, nullptr);

@@ -67,73 +67,64 @@ class FPS_PROJECT_API UTCPSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 protected:
-	class FClientThread* ClientThread;
-
-	FPacketData RecvPacketData;
-	FTimerHandle ManageRecvPacketHandle;
+	bool GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, const FString& FileName);
 
 protected:
-	class FSocket* Connect(const int32& PortNum, const FString& IP);
-
-public:
-	bool Recv(FPacketData& OutRecvPacket);
-
-	FORCEINLINE void SetRecvPacket(const FPacketData& RecvPacket) { RecvPacketData = RecvPacket; };
-
-	/* < Funcs You Can Use on other class > -----------------*/
-public:
-	void ConnectToTCPServer(const int32& PortNum, const FString& IP);
-
-	void DestroySocket();
-
-	bool Send(const FPacketData& SendPacket);
-
-	bool SendToLoginServer(const FPacketData& SendPacket);
-
-	bool IsConnect();
-	/*-----------------------------------------------------*/
-
-	/* < MultiCast Delegates You Can Use > ----------------*/
-public:
-	FDele_RecvPacket RecvPacketDelegate;
-	/*-----------------------------------------------------*/
-
-protected:
-	// For Socket Error Log
 	void PrintSocketError(const FString& Text);
 
+	class FSocket* Connect(const FString& IP, const int32& PortNum);
+
+	bool Send(class FSocket*& TargetSocket, const FPacketData& SendPacket);
+
+public:
+	bool Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket);
+
+	void DestroySocket(class FSocket*& TargetSocket);
+
+/* < Funcs You Can Use on other class > ---------------------*/
+public:
+	bool SendToLoginServer(const FPacketData& SendPacket);
+/*-----------------------------------------------------------*/
+
 protected:
-	/* Your Custom Codes In this Func----------------------*/
+	FPacketData RecvPacketData;
+
+	FTimerHandle ManageRecvPacketHandle;
+
+public:
+	FORCEINLINE void SetRecvPacket(const FPacketData& RecvPacket) { RecvPacketData = RecvPacket; };
+
+protected:
 	UFUNCTION()
+	// Your Custom Codes In this Func
 	void ManageRecvPacket();
-	/*-----------------------------------------------------*/
 
-	/* Your Custom Vars In Here----------------------------*/
-protected:
+public:
+	// MultiCast Delegates You Can Use
+	FDele_RecvPacket RecvPacketDelegate;
 
-	/*-----------------------------------------------------*/
 };
 
 class FPS_PROJECT_API FClientThread : public FRunnable
 {
 public:
-	FClientThread(class UTCPSubsystem* NewTCPSubsystem);
+	FClientThread(class UTCPSubsystem* NewTCPSubsystem, class FSocket* TargetSocket);
 
-	virtual ~FClientThread();
+	~FClientThread() override;
 
 protected:
-	virtual bool Init() override;
+	bool Init() override;
 
-	virtual uint32 Run() override;
+	uint32 Run() override;
 
-	virtual void Stop() override;
-
-	virtual void Exit() override;
+	void Exit() override;
+	
+	//void Stop() override;
 
 private:
 	class UTCPSubsystem* TCPSubsystem;
 
-private:
-	bool bStopThread;
+	class FSocket* ClientSocket;
 
+	FRunnableThread* Thread;
 };

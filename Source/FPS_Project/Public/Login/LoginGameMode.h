@@ -14,4 +14,7 @@ class FPS_PROJECT_API ALoginGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+protected:
+	virtual void StartPlay() override;
+
 };

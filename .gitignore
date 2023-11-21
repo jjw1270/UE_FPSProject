@@ -76,9 +76,8 @@ DerivedDataCache/*
 Package/*
 
 # Custom Ignores
-Source/FPS_Project/LoginServerConfig.txt
-
 TCPServer/mysqlConnector/*
 TCPServer/TCP_Server_ClientLogin/x64/*
 TCPServer/TCP_Server_ClientLogin/config.txt
 TCPServer/TCP_Server_DediServer/*
+LoginServerConfig.txt
