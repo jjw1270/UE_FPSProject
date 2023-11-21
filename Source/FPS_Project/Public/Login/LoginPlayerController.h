@@ -18,10 +18,6 @@ protected:
 	
 	
 public:
-	// connect
-	// send packet
-	// make recv thread
-	// process recv packet
-	// disconnect
+	// maybe not used..
 	
 };
