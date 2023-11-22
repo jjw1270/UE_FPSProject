@@ -32,8 +32,7 @@ enum class EPacketType : uint16
 	C2S_ReqSignUp											= 1010,
 	S2C_ResSignUp_Success									= 1011,
 	S2C_ResSignUp_Fail_ID									= 1012,
-	S2C_ResSignUp_Fail_NickName								= 1012,
-	S2C_ResSignUp_Fail_ID_NickName							= 1013,
+	S2C_ResSignUp_Fail_NickName								= 1013,
 
 //-------------------------------------------------------------------------------------
 

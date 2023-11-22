@@ -20,6 +20,7 @@ void ULoginWidget::NativeOnInitialized()
 	Button_StartGame->OnClicked.AddDynamic(this, &ULoginWidget::Button_StartGame_Clicked);
 	Button_GuestStartgame->OnClicked.AddDynamic(this, &ULoginWidget::Button_GuestStartgame_Clicked);
 
+	WBP_Signup->LoginWidget = this;
 }
 
 void ULoginWidget::Button_Close_Clicked()
@@ -51,6 +52,11 @@ void ULoginWidget::Button_StartGame_Clicked()
 void ULoginWidget::Button_GuestStartgame_Clicked()
 {
 	// later! -> random guest nickname
+}
+
+void ULoginWidget::CloseSignupWidget()
+{
+	WidgetSwitcher_Sgin->SetActiveWidgetIndex(0);
 }
 
 void ULoginWidget::CleanComponents()

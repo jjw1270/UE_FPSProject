@@ -66,6 +66,9 @@ protected:
 	UFUNCTION()
 	void Button_GuestStartgame_Clicked();
 
+public:
+	void CloseSignupWidget();
+
 protected:
 	void CleanComponents();
 };

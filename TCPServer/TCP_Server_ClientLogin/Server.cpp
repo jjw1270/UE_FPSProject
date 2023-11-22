@@ -179,10 +179,6 @@ int main()
 		exit(-1);
 	}
 
-	struct timeval Timeout;
-	Timeout.tv_sec = 0;
-	Timeout.tv_usec = 500;
-
 	cout << "Success!" << endl;
 
 	while (true)

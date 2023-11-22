@@ -15,7 +15,4 @@ void ALoginPlayerController::BeginPlay()
 
 	SetShowMouseCursor(true);
 	SetInputMode(FInputModeUIOnly());
-
-	//FPacketData SendPacket(EPacketType::C2S_Ping, TEXT("안녕!"));
-	//TCPSubsystem->SendToLoginServer(SendPacket);
 }

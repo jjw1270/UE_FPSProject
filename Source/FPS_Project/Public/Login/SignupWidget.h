@@ -15,6 +15,10 @@ class FPS_PROJECT_API USignupWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY()
+	class ULoginWidget* LoginWidget;
+	
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -58,4 +62,10 @@ protected:
 
 	FDelegateHandle RecvPacketHandle;
 
+protected:
+	bool CheckID(const FString& NewID);
+
+	bool CheckPwd(const FString& NewPwd, const FString& NewPwd2);
+
+	bool CheckUsername(const FString& NewUsername);
 };
