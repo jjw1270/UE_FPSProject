@@ -10,8 +10,7 @@ enum class EPacket
 	S2C_Ping												= 1,
 	C2S_Ping												= 2,
 
-	S2C_CastMessage											= 3,
-	//C2S_CastMessage										= 4,	//reserved
+	S2C_CastMessage											= 10,
 
 	S2C_ConnectSuccess										= 100,
 
@@ -21,15 +20,13 @@ enum class EPacket
 	S2C_ResSignIn_Success									= 1001,
 	S2C_ResSignIn_Fail_InValidID							= 1002,
 	S2C_ResSignIn_Fail_InValidPassword						= 1003,
-	//S2C_ResSignIn_Fail_AlreadySignIn						= 1004,  //reserved
+	S2C_ResSignIn_Fail_AlreadySignIn						= 1004,
 
-	C2S_ReqSignUpIDPwd										= 1010,
-	S2C_ResSignUpIDPwd_Success								= 1011,
-	S2C_ResSignUpIDPwd_Fail_ExistID							= 1012,
-
-	C2S_ReqSignUpNickName									= 1020,
-	S2C_ResSignUpNickName_Success							= 1021,
-	S2C_ResSignUpNickName_Fail_ExistNickName				= 1022,
+	C2S_ReqSignUp											= 1010,
+	S2C_ResSignUp_Success									= 1011,
+	S2C_ResSignUp_Fail_ID									= 1012,
+	S2C_ResSignUp_Fail_NickName								= 1012,
+	S2C_ResSignUp_Fail_ID_NickName							= 1013,
 	
 	C2S_ReqMatchMaking										= 1100,
 	S2C_ResMatchMaking_DediIP								= 1101,

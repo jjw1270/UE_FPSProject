@@ -15,9 +15,13 @@ class FPS_PROJECT_API ALoginPlayerController : public APlayerController
 	GENERATED_BODY()
 	
 protected:
-	
-	
-public:
-	// maybe not used..
-	
+	virtual void BeginPlay() override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class UUserWidget> StartScreenWidgetClass;
+
+	UPROPERTY()
+	class UUserWidget* StartScreenWidget;
+
 };

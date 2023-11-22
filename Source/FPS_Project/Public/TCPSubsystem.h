@@ -10,6 +10,7 @@
  * 
  */
 
+UENUM()
 enum class EPacketType : uint16
 {
 	None													= 0,
@@ -28,13 +29,12 @@ enum class EPacketType : uint16
 	S2C_ResSignIn_Fail_InValidPassword						= 1003,
 	S2C_ResSignIn_Fail_AlreadySignIn						= 1004,
 
-	C2S_ReqSignUpIDPwd										= 1010,
-	S2C_ResSignUpIDPwd_Success								= 1011,
-	S2C_ResSignUpIDPwd_Fail_ExistID							= 1012,
+	C2S_ReqSignUp											= 1010,
+	S2C_ResSignUp_Success									= 1011,
+	S2C_ResSignUp_Fail_ID									= 1012,
+	S2C_ResSignUp_Fail_NickName								= 1012,
+	S2C_ResSignUp_Fail_ID_NickName							= 1013,
 
-	C2S_ReqSignUpNickName									= 1020,
-	S2C_ResSignUpNickName_Success							= 1021,
-	S2C_ResSignUpNickName_Fail_ExistNickName				= 1022,
 //-------------------------------------------------------------------------------------
 
 	C2S_ReqMatchMaking = 1100,
@@ -57,7 +57,8 @@ public:
 	FString Payload;
 };
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FDele_RecvPacket, const FString&, const int32&, bool);
+//packetType, payload
+DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_RecvPacket, const EPacketType&, const FString&);
 
 const int32 HeaderSize{ 4 };
 

@@ -231,14 +231,7 @@ void UTCPSubsystem::ManageRecvPacket()
 
 	if (RecvPacketDelegate.IsBound())
 	{
-		int32 PacketCode = static_cast<int32>(RecvPacketData.PacketType);
-
-		/*switch (RecvPacketData.PacketType)
-		{
-
-		default:
-			break;
-		}*/
+		RecvPacketDelegate.Broadcast(RecvPacketData.PacketType, RecvPacketData.Payload);
 	}
 
 	RecvPacketData = FPacketData();

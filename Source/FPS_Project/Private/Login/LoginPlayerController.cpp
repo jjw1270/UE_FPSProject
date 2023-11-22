@@ -2,4 +2,20 @@
 
 
 #include "Login/LoginPlayerController.h"
+#include "FPS_Project.h"
+#include "Blueprint/UserWidget.h"
 
+void ALoginPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CHECK_VALID(StartScreenWidgetClass);
+	StartScreenWidget = CreateWidget(this, StartScreenWidgetClass);
+	StartScreenWidget->AddToViewport();
+
+	SetShowMouseCursor(true);
+	SetInputMode(FInputModeUIOnly());
+
+	//FPacketData SendPacket(EPacketType::C2S_Ping, TEXT("안녕!"));
+	//TCPSubsystem->SendToLoginServer(SendPacket);
+}
