@@ -66,6 +66,11 @@ UCLASS()
 class FPS_PROJECT_API UTCPSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
+	
+protected:
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	virtual void Deinitialize() override;
 
 protected:
 	bool GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, const FString& FileName);

@@ -13,6 +13,22 @@
 #include "FPS_project.h"
 #include "MyUtility.h"
 
+void UTCPSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	UWorld* World = GetWorld();
+	CHECK_VALID(World);
+
+	World->GetTimerManager().SetTimer(ManageRecvPacketHandle, this, &UTCPSubsystem::ManageRecvPacket, 0.01f, true);
+}
+
+void UTCPSubsystem::Deinitialize()
+{
+	UWorld* World = GetWorld();
+	CHECK_VALID(World);
+
+	World->GetTimerManager().ClearTimer(ManageRecvPacketHandle);
+}
+
 bool UTCPSubsystem::GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, const FString& FileName)
 {
 	FString IPPortConfig;

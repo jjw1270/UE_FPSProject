@@ -2,6 +2,7 @@
 
 
 #include "Login/SignupWidget.h"
+#include "FPS_Project.h"
 
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
@@ -40,7 +41,7 @@ void USignupWidget::Button_Signup_Clicked()
 	// if(success) : close window with popup(blink 1sec)
 	// else : set text info
 
-	if (!TextBox_Password->GetText().CompareTo(TextBox_Password2->GetText()))
+	if (TextBox_Password->GetText().ToString() != TextBox_Password2->GetText().ToString())
 	{
 		TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호를 확인하세요.")));
 		TextBox_Password->SetText(FText::GetEmpty());
