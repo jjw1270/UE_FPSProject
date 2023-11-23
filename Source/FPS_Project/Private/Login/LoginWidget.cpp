@@ -2,13 +2,16 @@
 
 
 #include "Login/LoginWidget.h"
+#include "FPS_Project.h"
+#include "TCPSubsystem.h"
+
+#include "SignupWidget.h"
+#include "FindPasswordWidget.h"
+
 #include "Components/WidgetSwitcher.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
-
-#include "SignupWidget.h"
-#include "FindPasswordWidget.h"
 
 void ULoginWidget::NativeOnInitialized()
 {
@@ -24,6 +27,24 @@ void ULoginWidget::NativeOnInitialized()
 
 	WBP_Signup->LoginWidget = this;
 	WBP_FindPassword->LoginWidget = this;
+}
+
+void ULoginWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	TCPSubsystem = GetGameInstance()->GetSubsystem<UTCPSubsystem>();
+	if (TCPSubsystem)
+	{
+		RecvPacketHandle = TCPSubsystem->RecvPacketDelegate.AddUObject(this, &ULoginWidget::OnRecvPacket);
+	}
+}
+
+void ULoginWidget::NativeDestruct()
+{
+	Super::NativeDestruct();
+
+	TCPSubsystem->RecvPacketDelegate.Remove(RecvPacketHandle);
 }
 
 void ULoginWidget::Button_Close_Clicked()
@@ -52,6 +73,20 @@ void ULoginWidget::Button_FindPwd_Clicked()
 void ULoginWidget::Button_StartGame_Clicked()
 {
 	//check ID, Pwd from tcp login server
+	if (TCPSubsystem)
+	{
+		TextBlock_Info->SetText(FText::FromString(TEXT("정보 확인중..")));
+
+		// Payload = "ID:Password"
+		FString UserConfig = TextBox_ID->GetText().ToString() + ":" + TextBox_Password->GetText().ToString();
+
+		if (!TCPSubsystem->SendToLoginServer(FPacketData(EPacketType::C2S_ReqSignIn, UserConfig)))
+		{
+			TextBlock_Info->SetText(FText::FromString(TEXT("서버 연결 실패")));
+			return;
+		}
+		// now wait for recv
+	}
 }
 
 void ULoginWidget::Button_GuestStartgame_Clicked()
@@ -75,4 +110,11 @@ void ULoginWidget::CleanComponents()
 {
 	TextBox_ID->SetText(FText::GetEmpty());
 	TextBox_Password->SetText(FText::GetEmpty());
+
+	TextBlock_Info->SetText(FText::GetEmpty());
+}
+
+void ULoginWidget::OnRecvPacket(const EPacketType& PacketType, const FString& Payload)
+{
+
 }

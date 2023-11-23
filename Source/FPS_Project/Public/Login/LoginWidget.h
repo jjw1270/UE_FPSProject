@@ -17,8 +17,10 @@ class FPS_PROJECT_API ULoginWidget : public UUserWidget
 protected:
 	virtual void NativeOnInitialized() override;
 
-	//virtual void NativeConstruct() override;
-	
+	virtual void NativeConstruct() override;
+
+	virtual void NativeDestruct() override;
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* WidgetSwitcher_Sgin;
@@ -79,4 +81,15 @@ public:
 
 protected:
 	void CleanComponents();
+
+protected:
+	UFUNCTION()
+	void OnRecvPacket(const EPacketType& PacketType, const FString& Payload);
+
+protected:
+	UPROPERTY()
+	class UTCPSubsystem* TCPSubsystem;
+
+	FDelegateHandle RecvPacketHandle;
+
 };
