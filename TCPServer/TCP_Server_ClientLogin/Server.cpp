@@ -149,7 +149,7 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 		Sql_PreStatement->setString(2, ID);
 		Sql_PreStatement->executeUpdate();
 
-		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::C2S_ResNewPassword);
+		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResNewPassword);
 		if (!bSendSuccess)
 		{
 			cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;

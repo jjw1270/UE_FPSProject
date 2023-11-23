@@ -15,6 +15,6 @@ public:
 
 	static string Utf8ToMultibyte(const string& str);
 
-	static vector<string> ParsingString(const string& TargetStr, const char& TargetChar);
+	static vector<string> ParsingString(string TargetStr, const char& TargetChar);
 
 };

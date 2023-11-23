@@ -32,6 +32,7 @@ void ULoginWidget::Button_Close_Clicked()
 
 	CleanComponents();
 	WBP_Signup->CleanComponents();
+	WBP_FindPassword->CleanComponents();
 
 	this->SetVisibility(ESlateVisibility::Collapsed);
 }

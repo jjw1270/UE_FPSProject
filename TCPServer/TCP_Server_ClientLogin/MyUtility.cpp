@@ -59,15 +59,15 @@ string MyUtility::Utf8ToMultibyte(const string& str) {
 	return carr;
 }
 
-vector<string> MyUtility::ParsingString(const string& TargetStr, const char& TargetChar)
+vector<string> MyUtility::ParsingString(string TargetStr, const char& TargetChar)
 {
 	vector<string> Data;
 
 	istringstream Iss(TargetStr);
 	string token;
-	for (int i = 0; getline(Iss, token, TargetChar); i++)
+	for (int i = 0; getline(Iss, token, TargetChar); ++i)
 	{
-		Data[i] = token;
+		Data.push_back(token);
 	}
 
 	return Data;

@@ -135,7 +135,7 @@ bool UFindPasswordWidget::CheckPwd(const FString& NewPwd, const FString& NewPwd2
 	}
 
 	//Pwd : 8~20, Eng/num/symbol(!,@,#,$,%)
-	if (NewPwd.Len() < 8 || NewPwd.Len() > 20)
+	if (NewPwd.Len() < 8 && NewPwd.Len() > 20)
 	{
 		TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호는 8~20자 내외입니다.")));
 		return false;

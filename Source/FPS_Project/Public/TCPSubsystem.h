@@ -40,7 +40,7 @@ enum class EPacketType : uint16
 	S2C_ResCheckIDUserName_Fail_IDNotExist					= 1023,
 
 	C2S_ReqNewPassword										= 1030,
-	C2S_ResNewPassword										= 1031,
+	S2C_ResNewPassword										= 1031,
 
 //-------------------------------------------------------------------------------------
 
