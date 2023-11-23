@@ -124,7 +124,7 @@ void ULoginWidget::OnRecvPacket(const EPacketType& PacketType, const FString& Pa
 		UFPSProjectGameInstance* GI = GetGameInstance<UFPSProjectGameInstance>();
 		CHECK_VALID(GI);
 		GI->SetUserID(Payload);
-		TextBlock_Info->SetText(FText::FromString(TEXT("로그인 : ") + Payload));
+		TextBlock_Info->SetText(FText::FromString((TEXT("로그인 성공! : %s"), *Payload)));
 	}
 		break;
 	case EPacketType::S2C_ResSignIn_Fail_InValidID:

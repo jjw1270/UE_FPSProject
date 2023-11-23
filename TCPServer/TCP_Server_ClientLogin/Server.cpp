@@ -178,7 +178,7 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 				{
 					//Check Already Login
 					int UserIdx = Sql_Result->getInt("No");
-					SqlQuery = "SELECT * FROM loginuser WHERE No = ?";
+					SqlQuery = "SELECT * FROM loginuser WHERE UserNo = ?";
 					Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
 					Sql_PreStatement->setInt(1, UserIdx);
 					Sql_Result = Sql_PreStatement->executeQuery();
@@ -194,7 +194,7 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 					else
 					{
 						// Add User to loginuser table
-						SqlQuery = "INSERT INTO loginuser(No) VALUES(?)";
+						SqlQuery = "INSERT INTO loginuser(UserNo) VALUES(?)";
 						Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
 						Sql_PreStatement->setInt(1, UserIdx);
 						Sql_PreStatement->executeUpdate();
@@ -229,9 +229,10 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 	break;
 	case EPacket::C2S_ReqSignOut:
 	{
-		string ID = Payload;
-		if (!ID.empty())
+		if (Payload != nullptr)
 		{
+			string ID = Payload;
+
 			//SELECT ID in DB
 			string SqlQuery = "SELECT * FROM userconfig WHERE ID = ?";
 			Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
@@ -242,11 +243,17 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 			{
 				int UserIdx = Sql_Result->getInt("No");
 
-				SqlQuery = "DELETE FROM loginuser WHERE No = ?";
+				SqlQuery = "DELETE FROM loginuser WHERE UserNo = ?";
 				Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
 				Sql_PreStatement->setInt(1, UserIdx);
 				Sql_PreStatement->executeUpdate();
 			}
+		}
+
+		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignOut);
+		if (!bSendSuccess)
+		{
+			cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
 		}
 	}
 	break;

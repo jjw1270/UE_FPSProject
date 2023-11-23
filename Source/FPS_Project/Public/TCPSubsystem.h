@@ -43,7 +43,7 @@ enum class EPacketType : uint16
 	S2C_ResNewPassword										= 1031,
 
 	C2S_ReqSignOut											= 1900,
-
+	S2C_ResSignOut											= 1901,
 
 //-------------------------------------------------------------------------------------
 
