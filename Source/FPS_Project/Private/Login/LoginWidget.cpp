@@ -6,7 +6,9 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Components/TextBlock.h"
+
 #include "SignupWidget.h"
+#include "FindPasswordWidget.h"
 
 void ULoginWidget::NativeOnInitialized()
 {
@@ -21,6 +23,7 @@ void ULoginWidget::NativeOnInitialized()
 	Button_GuestStartgame->OnClicked.AddDynamic(this, &ULoginWidget::Button_GuestStartgame_Clicked);
 
 	WBP_Signup->LoginWidget = this;
+	WBP_FindPassword->LoginWidget = this;
 }
 
 void ULoginWidget::Button_Close_Clicked()
@@ -41,7 +44,8 @@ void ULoginWidget::Button_Signup_Clicked()
 
 void ULoginWidget::Button_FindPwd_Clicked()
 {
-	// later!
+	CleanComponents();
+	WidgetSwitcher_Sgin->SetActiveWidgetIndex(2);
 }
 
 void ULoginWidget::Button_StartGame_Clicked()
@@ -57,6 +61,13 @@ void ULoginWidget::Button_GuestStartgame_Clicked()
 void ULoginWidget::CloseSignupWidget()
 {
 	WidgetSwitcher_Sgin->SetActiveWidgetIndex(0);
+	WBP_Signup->CleanComponents();
+}
+
+void ULoginWidget::CloseFindPasswordWidget()
+{
+	WidgetSwitcher_Sgin->SetActiveWidgetIndex(0);
+	WBP_FindPassword->CleanComponents();
 }
 
 void ULoginWidget::CleanComponents()

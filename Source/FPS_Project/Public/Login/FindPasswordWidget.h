@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "SignupWidget.generated.h"
+#include "FindPasswordWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FPS_PROJECT_API USignupWidget : public UUserWidget
+class FPS_PROJECT_API UFindPasswordWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
 public:
 	UPROPERTY()
 	class ULoginWidget* LoginWidget;
-	
+
 protected:
 	virtual void NativeOnInitialized() override;
 
@@ -30,23 +30,32 @@ protected:
 	class UEditableTextBox* TextBox_ID;
 
 	UPROPERTY(meta = (BindWidget))
+	class UEditableTextBox* TextBox_Username;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	class UButton* Button_IDName;
+
+	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* TextBox_Password;
 
 	UPROPERTY(meta = (BindWidget))
 	class UEditableTextBox* TextBox_Password2;
 
 	UPROPERTY(meta = (BindWidget))
-	class UEditableTextBox* TextBox_UserName;
-
-	UPROPERTY(meta = (BindWidget))
-	class UButton* Button_Signup;
+	class UButton* Button_Password;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TextBlock_Info;
+
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* VerticalBox_Password;
 	
 protected:
 	UFUNCTION()
-	void Button_Signup_Clicked();
+	void Button_IDName_Clicked();
+
+	UFUNCTION()
+	void Button_Password_Clicked();
 
 public:
 	void CleanComponents();
@@ -62,9 +71,6 @@ protected:
 	FDelegateHandle RecvPacketHandle;
 
 protected:
-	bool CheckID(const FString& NewID);
-
 	bool CheckPwd(const FString& NewPwd, const FString& NewPwd2);
 
-	bool CheckUsername(const FString& NewUsername);
 };

@@ -14,8 +14,7 @@ enum class EPacket
 
 	S2C_ConnectSuccess										= 100,
 
-	///////////////////////////////////////////////////////////////////////////
-
+	//----------------------------Login----------------------------------------------------
 	C2S_ReqSignIn											= 1000,
 	S2C_ResSignIn_Success									= 1001,
 	S2C_ResSignIn_Fail_InValidID							= 1002,
@@ -25,15 +24,22 @@ enum class EPacket
 	C2S_ReqSignUp											= 1010,
 	S2C_ResSignUp_Success									= 1011,
 	S2C_ResSignUp_Fail_ID									= 1012,
-	S2C_ResSignUp_Fail_NickName								= 1012,
-	S2C_ResSignUp_Fail_ID_NickName							= 1013,
+	S2C_ResSignUp_Fail_NickName								= 1013,
+
+	C2S_ReqCheckIDUserName									= 1020,
+	S2C_ResCheckIDUserName_Success							= 1021,
+	S2C_ResCheckIDUserName_Fail								= 1022,
+	S2C_ResCheckIDUserName_Fail_IDNotExist					= 1023,
+
+	C2S_ReqNewPassword										= 1030,
+	C2S_ResNewPassword										= 1031,
 	
+	//-------------------------------------------------------------------------------------
+
 	C2S_ReqMatchMaking										= 1100,
 	S2C_ResMatchMaking_DediIP								= 1101,
 
 	C2S_ReqCancelMatchMaking								= 1110,
-
-	///////////////////////////////////////////////////////////////////////////
 
 	C2S_ReqDediTCPConnect									= 3000,
 

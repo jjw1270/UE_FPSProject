@@ -2,6 +2,7 @@
 
 #include <Windows.h>
 #include <string>
+#include <vector>
 
 using namespace std;
 
@@ -13,5 +14,7 @@ public:
 	static string MultibyteToUtf8(const string& str);
 
 	static string Utf8ToMultibyte(const string& str);
+
+	static vector<string> ParsingString(const string& TargetStr, const char& TargetChar);
 
 };

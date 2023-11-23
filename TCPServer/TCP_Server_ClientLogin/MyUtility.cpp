@@ -1,6 +1,7 @@
 #include "MyUtility.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -56,4 +57,18 @@ string MyUtility::Utf8ToMultibyte(const string& str) {
 	memset(carr, '\0', sizeof(carr));
 	WideCharToMultiByte(CP_ACP, 0, warr, -1, carr, 1024, NULL, NULL);
 	return carr;
+}
+
+vector<string> MyUtility::ParsingString(const string& TargetStr, const char& TargetChar)
+{
+	vector<string> Data;
+
+	istringstream Iss(TargetStr);
+	string token;
+	for (int i = 0; getline(Iss, token, TargetChar); i++)
+	{
+		Data[i] = token;
+	}
+
+	return Data;
 }

@@ -133,7 +133,7 @@ bool UTCPSubsystem::Send(FSocket*& TargetSocket, const FPacketData& SendPacket)
 	return true;
 }
 
-bool UTCPSubsystem::Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket)
+bool UTCPSubsystem::Recv(FSocket* TargetSocket, FPacketData& OutRecvPacket)
 {
 	if (TargetSocket->Wait(ESocketWaitConditions::WaitForRead, FTimespan::FromSeconds(2.f)))
 	{
@@ -142,7 +142,7 @@ bool UTCPSubsystem::Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket)
 
 		// Recv Header
 		int BytesRead = 0;
-		bool bRecvHeader = TargetSocket->Recv(HeaderBuffer.GetData(), HeaderSize, BytesRead);
+		bool bRecvHeader = TargetSocket->Recv(HeaderBuffer.GetData(), HeaderSize, BytesRead, ESocketReceiveFlags::WaitAll);
 		if (!bRecvHeader)
 		{
 			PrintSocketError(TEXT("Receive Header"));
@@ -165,8 +165,7 @@ bool UTCPSubsystem::Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket)
 			uint8_t* PayloadBuffer = new uint8_t[RecvPayloadSize + 1];
 
 			BytesRead = 0;
-			bool bRecvPayload = TargetSocket->Recv(PayloadBuffer, RecvPayloadSize, BytesRead);
-
+			bool bRecvPayload = TargetSocket->Recv(PayloadBuffer, RecvPayloadSize, BytesRead, ESocketReceiveFlags::WaitAll);
 			if (!bRecvPayload)
 			{
 				PrintSocketError(TEXT("Receive Payload"));
@@ -189,7 +188,7 @@ bool UTCPSubsystem::Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket)
 	return true;
 }
 
-void UTCPSubsystem::DestroySocket(FSocket*& TargetSocket)
+void UTCPSubsystem::DestroySocket(FSocket* TargetSocket)
 {
 	// Clean Socket
 	if (TargetSocket)
@@ -277,9 +276,6 @@ FClientThread::~FClientThread()
 
 	delete TCPSubsystem;
 	TCPSubsystem = nullptr;
-
-	delete ClientSocket;
-	ClientSocket = nullptr;
 }
 
 bool FClientThread::Init()
@@ -292,7 +288,7 @@ bool FClientThread::Init()
 uint32 FClientThread::Run()
 {
 	FPacketData RecvPacketData;
-	bool RecvByte = TCPSubsystem->Recv(ClientSocket, RecvPacketData);
+	bool RecvByte = TCPSubsystem->Recv(ClientSocket.Get(), RecvPacketData);
 	if (!RecvByte)
 	{
 		ABLOG(Error, TEXT("Recv Error, Stop Thread"));
@@ -307,6 +303,6 @@ uint32 FClientThread::Run()
 
 void FClientThread::Exit()
 {
-	TCPSubsystem->DestroySocket(ClientSocket);
+	TCPSubsystem->DestroySocket(ClientSocket.Get());
 	ABLOG(Warning, TEXT("End Thread"));
 }

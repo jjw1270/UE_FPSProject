@@ -3,7 +3,7 @@
 
 #include "Login/SignupWidget.h"
 #include "FPS_Project.h"
-#include "MyUtility.h"
+#include "TCPSubsystem.h"
 #include "LoginWidget.h"
 
 #include "Components/Button.h"
@@ -94,7 +94,7 @@ void USignupWidget::OnRecvPacket(const EPacketType& PacketType, const FString& P
 	{
 	case EPacketType::S2C_ResSignUp_Success:
 		LoginWidget->CloseSignupWidget();
-		ABLOG(Warning, TEXT("Sign up Success!"));
+		LoginWidget->ShowSuccessPopup(TEXT("회원가입 성공!"));
 		break;
 	case EPacketType::S2C_ResSignUp_Fail_ID:
 		TextBlock_Info->SetText(FText::FromString(TEXT("ID가 이미 존재합니다.")));
@@ -117,16 +117,16 @@ bool USignupWidget::CheckID(const FString& NewID)
 		for (const auto& Ch : NewID)
 		{
 			// Check is Eng/num
-			if ((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') || 
-				(Ch >= '0' && Ch <= '9'))
+			if (!((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') || 
+				(Ch >= '0' && Ch <= '9')))
 			{
-				return true;
+				TextBlock_Info->SetText(FText::FromString(TEXT("아이디는 4~16자의 영문,숫자 조합만 가능합니다.")));
+				return false;
 			}
 		}
 	}
 
-	TextBlock_Info->SetText(FText::FromString(TEXT("아이디는 4~16자의 영문,숫자 조합만 가능합니다.")));
-	return false;
+	return true;
 }
 
 bool USignupWidget::CheckPwd(const FString& NewPwd, const FString& NewPwd2)
@@ -144,37 +144,47 @@ bool USignupWidget::CheckPwd(const FString& NewPwd, const FString& NewPwd2)
 		for (const auto& Ch : NewPwd)
 		{
 			// Check is Eng/num/(!,@,#,$,%)
-			if ((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') ||
+			if (!((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') ||
 				(Ch >= '0' && Ch <= '9') ||
-				(Ch == '!' || Ch == '@' || Ch == '#' || Ch == '$' || Ch == '%'))
+				(Ch == '!' || Ch == '@' || Ch == '#' || Ch == '$' || Ch == '%')))
 			{
-				return true;
+				TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호는 8~20자의 영문,숫자,!,@,#,$,% 조합만 가능합니다.")));
+				return false; 
 			}
 		}
 	}
 
-	TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호는 8~20자의 영문,숫자,!,@,#,$,% 조합만 가능합니다.")));
-	return false;
+	return true;
 }
 
 bool USignupWidget::CheckUsername(const FString& NewUsername)
 {
-	ABLOG(Warning, TEXT("%d"), NewUsername.Len());
 	// UserName : Eng(4~16)/Kor(2~8)/num
+	int32 StrLen = 0;
+
 	if (NewUsername.Len() >= 4 && NewUsername.Len() <= 16)
 	{
 		for (const auto& Ch : NewUsername)
 		{
 			// Check is Eng/Kor/num
-			if ((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') ||
+			if (!((Ch >= 'a' && Ch <= 'z') || (Ch >= 'A' && Ch <= 'Z') ||
 				(Ch >= 0xAC00 && Ch <= 0xD7A3) ||
-				(Ch >= '0' && Ch <= '9'))
+				(Ch >= '0' && Ch <= '9')))
 			{
-				return true;
+				TextBlock_Info->SetText(FText::FromString(TEXT("닉네임은 4~16자의 영문 또는 2~8자의 한글과 숫자 조합만 가능합니다.")));
+				return false;
+			}
+
+			if ((Ch >= 0xAC00 && Ch <= 0xD7A3))
+			{
+				StrLen += 2;
+			}
+			else
+			{
+				StrLen++;
 			}
 		}
 	}
 
-	TextBlock_Info->SetText(FText::FromString(TEXT("닉네임은 4~16자의 영문 또는 2~8자의 한글과 숫자 조합만 가능합니다.")));
-	return false;
+	return true;
 }

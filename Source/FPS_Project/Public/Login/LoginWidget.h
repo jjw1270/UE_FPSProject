@@ -45,10 +45,13 @@ protected:
 	class UButton* Button_GuestStartgame;
 
 	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* TextBlock_Info;
+
+	UPROPERTY(meta = (BindWidget))
 	class USignupWidget* WBP_Signup;
 
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* TextBlock_Info;
+	class UFindPasswordWidget* WBP_FindPassword;
 
 protected:
 	UFUNCTION()
@@ -68,6 +71,11 @@ protected:
 
 public:
 	void CloseSignupWidget();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowSuccessPopup(const FString& PopupMessage);
+
+	void CloseFindPasswordWidget();
 
 protected:
 	void CleanComponents();

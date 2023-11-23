@@ -27,21 +27,135 @@ const int HeaderSize = 4;
 
 void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Payload)
 {
-	const unsigned short UserNumber = (unsigned short)ClientSocket;
-
 	bool bSendSuccess = false;
 	sql::PreparedStatement* Sql_PreStatement = nullptr;
 	sql::ResultSet* Sql_Result = nullptr;
 
 	switch (PacketType)
 	{
-	case EPacket::C2S_Ping:
-		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_Ping, "반가워!");
+	case EPacket::C2S_ReqSignUp:
+	{
+		//Parsing ID, Password, Username
+		vector<string> ParsingData = MyUtility::ParsingString(Payload, ':');
+		string ID = ParsingData[0];
+		string Password = ParsingData[1];
+		string UserName = ParsingData[2];
+
+		//Check ID, Username is overlapped in DB userconfig
+		string SqlQuery = "SELECT "
+			"(SELECT COUNT(*) FROM userconfig WHERE ID = ?) AS ID_Exist, "
+			"(SELECT COUNT(*) FROM userconfig WHERE NickName = ?) AS NickName_Exist";
+		Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+		Sql_PreStatement->setString(1, ID);
+		Sql_PreStatement->setString(2, MyUtility::MultibyteToUtf8(UserName));
+		Sql_Result = Sql_PreStatement->executeQuery();
+
+		if (Sql_Result->next())
+		{
+			if (Sql_Result->getInt("ID_Exist") > 0)
+			{
+				bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignUp_Fail_ID);
+				if (!bSendSuccess)
+				{
+					cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+				}
+			}
+			else if (Sql_Result->getInt("NickName_Exist") > 0)
+			{
+				bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignUp_Fail_NickName);
+				if (!bSendSuccess)
+				{
+					cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+				}
+			}
+			else
+			{
+				cout << "Create New Userconfig" << endl;
+				// Create New Userconfig
+				SqlQuery = "INSERT INTO userconfig(ID, NickName, Password) VALUES(?,?,?)";
+				Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+				Sql_PreStatement->setString(1, ID);
+				Sql_PreStatement->setString(2, MyUtility::MultibyteToUtf8(UserName));
+				Sql_PreStatement->setString(3, Password);
+				Sql_PreStatement->executeUpdate();
+
+				bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignUp_Success);
+				if (!bSendSuccess)
+				{
+					cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+				}
+			}
+		}
+	}
+	break;
+	case EPacket::C2S_ReqCheckIDUserName:
+	{
+		//Parsing ID, Username
+		vector<string> ParsingData = MyUtility::ParsingString(Payload, ':');
+		string ID = ParsingData[0];
+		string Username = ParsingData[1];
+
+		//Check ID and Username in DB
+		string SqlQuery = "SELECT * FROM userconfig WHERE ID = ?";
+		Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+		Sql_PreStatement->setString(1, ID);
+		Sql_Result = Sql_PreStatement->executeQuery();
+
+		if (Sql_Result->rowsCount() > 0)
+		{
+			//Check ID has Username
+			if (Sql_Result->next())
+			{
+				string DB_NickName = Sql_Result->getString("NickName");
+				if (DB_NickName == Username)
+				{
+					bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResCheckIDUserName_Success);
+					if (!bSendSuccess)
+					{
+						cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+					}
+				}
+				else
+				{
+					bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResCheckIDUserName_Fail);
+					if (!bSendSuccess)
+					{
+						cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+					}
+				}
+			}
+		}
+		else
+		{
+			//ID Not Exist in DB
+			bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResCheckIDUserName_Fail_IDNotExist);
+			if (!bSendSuccess)
+			{
+				cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+			}
+		}
+	}
+	break;
+	case EPacket::C2S_ReqNewPassword:
+	{
+		//Parsing ID, Password
+		vector<string> ParsingData = MyUtility::ParsingString(Payload, ':');
+		string ID = ParsingData[0];
+		string NewPassword = ParsingData[1];
+
+		string SqlQuery = "UPDATE userconfig SET Password = ? WHERE ID = ?";
+		Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+		Sql_PreStatement->setString(1, NewPassword);
+		Sql_PreStatement->setString(2, ID);
+		Sql_PreStatement->executeUpdate();
+
+		bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::C2S_ResNewPassword);
 		if (!bSendSuccess)
 		{
 			cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
 		}
-		break;
+	}
+	break;
 	default:
 		break;
 	}
@@ -55,7 +169,7 @@ unsigned WINAPI ServerThread(void* arg)
 	cout << "Thread Start" << endl;
 
 	SOCKET ClientSocket = *(SOCKET*)arg;
-	
+
 	// Recv Header
 	char HeaderBuffer[HeaderSize] = { 0, };
 	int RecvByte = recv(ClientSocket, HeaderBuffer, HeaderSize, MSG_WAITALL);

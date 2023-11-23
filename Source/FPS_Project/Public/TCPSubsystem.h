@@ -34,6 +34,14 @@ enum class EPacketType : uint16
 	S2C_ResSignUp_Fail_ID									= 1012,
 	S2C_ResSignUp_Fail_NickName								= 1013,
 
+	C2S_ReqCheckIDUserName									= 1020,
+	S2C_ResCheckIDUserName_Success							= 1021,
+	S2C_ResCheckIDUserName_Fail								= 1022,
+	S2C_ResCheckIDUserName_Fail_IDNotExist					= 1023,
+
+	C2S_ReqNewPassword										= 1030,
+	C2S_ResNewPassword										= 1031,
+
 //-------------------------------------------------------------------------------------
 
 	C2S_ReqMatchMaking = 1100,
@@ -82,9 +90,9 @@ protected:
 	bool Send(class FSocket*& TargetSocket, const FPacketData& SendPacket);
 
 public:
-	bool Recv(FSocket*& TargetSocket, FPacketData& OutRecvPacket);
+	bool Recv(FSocket* TargetSocket, FPacketData& OutRecvPacket);
 
-	void DestroySocket(class FSocket*& TargetSocket);
+	void DestroySocket(class FSocket* TargetSocket);
 
 /* < Funcs You Can Use on other class > ---------------------*/
 public:
@@ -129,7 +137,7 @@ protected:
 private:
 	class UTCPSubsystem* TCPSubsystem;
 
-	class FSocket* ClientSocket;
+	TSharedPtr<class FSocket> ClientSocket;
 
 	FRunnableThread* Thread;
 };
