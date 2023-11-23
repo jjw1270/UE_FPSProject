@@ -156,6 +156,100 @@ void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Paylo
 		}
 	}
 	break;
+	case EPacket::C2S_ReqSignIn:
+	{
+		//Parsing ID, Password
+		vector<string> ParsingData = MyUtility::ParsingString(Payload, ':');
+		string ID = ParsingData[0];
+		string Password = ParsingData[1];
+
+		//SELECT ID in DB
+		string SqlQuery = "SELECT * FROM userconfig WHERE ID = ?";
+		Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+		Sql_PreStatement->setString(1, ID);
+		Sql_Result = Sql_PreStatement->executeQuery();
+
+		if (Sql_Result->rowsCount() > 0)
+		{
+			//Check Password
+			if (Sql_Result->next())
+			{
+				if (Sql_Result->getString("Password") == Password)
+				{
+					//Check Already Login
+					int UserIdx = Sql_Result->getInt("No");
+					SqlQuery = "SELECT * FROM loginuser WHERE No = ?";
+					Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+					Sql_PreStatement->setInt(1, UserIdx);
+					Sql_Result = Sql_PreStatement->executeQuery();
+
+					if (Sql_Result->rowsCount() > 0)
+					{
+						bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignIn_Fail_AlreadySignIn);
+						if (!bSendSuccess)
+						{
+							cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+						}
+					}
+					else
+					{
+						// Add User to loginuser table
+						SqlQuery = "INSERT INTO loginuser(No) VALUES(?)";
+						Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+						Sql_PreStatement->setInt(1, UserIdx);
+						Sql_PreStatement->executeUpdate();
+
+						bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignIn_Success, ID.c_str());
+						if (!bSendSuccess)
+						{
+							cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+						}
+					}
+				}
+				else
+				{
+					bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignIn_Fail_InValidPassword);
+					if (!bSendSuccess)
+					{
+						cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+					}
+				}
+			}
+		}
+		else
+		{
+			//ID Not Exist in DB
+			bSendSuccess = PacketMaker::SendPacket(&ClientSocket, EPacket::S2C_ResSignIn_Fail_InValidID);
+			if (!bSendSuccess)
+			{
+				cout << "[" << (int)ClientSocket << "] Send Error : " << GetLastError() << endl;
+			}
+		}
+	}
+	break;
+	case EPacket::C2S_ReqSignOut:
+	{
+		string ID = Payload;
+		if (!ID.empty())
+		{
+			//SELECT ID in DB
+			string SqlQuery = "SELECT * FROM userconfig WHERE ID = ?";
+			Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+			Sql_PreStatement->setString(1, ID);
+			Sql_Result = Sql_PreStatement->executeQuery();
+
+			if (Sql_Result->next())
+			{
+				int UserIdx = Sql_Result->getInt("No");
+
+				SqlQuery = "DELETE FROM loginuser WHERE No = ?";
+				Sql_PreStatement = Sql_Connection->prepareStatement(SqlQuery);
+				Sql_PreStatement->setInt(1, UserIdx);
+				Sql_PreStatement->executeUpdate();
+			}
+		}
+	}
+	break;
 	default:
 		break;
 	}

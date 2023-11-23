@@ -3,6 +3,7 @@
 
 #include "Login/LoginWidget.h"
 #include "FPS_Project.h"
+#include "FPSProjectGameInstance.h"
 #include "TCPSubsystem.h"
 
 #include "SignupWidget.h"
@@ -116,5 +117,31 @@ void ULoginWidget::CleanComponents()
 
 void ULoginWidget::OnRecvPacket(const EPacketType& PacketType, const FString& Payload)
 {
-
+	switch (PacketType)
+	{
+	case EPacketType::S2C_ResSignIn_Success:
+	{
+		UFPSProjectGameInstance* GI = GetGameInstance<UFPSProjectGameInstance>();
+		CHECK_VALID(GI);
+		GI->SetUserID(Payload);
+		TextBlock_Info->SetText(FText::FromString((TEXT("로그인 성공! : %s"), *Payload)));
+	}
+		break;
+	case EPacketType::S2C_ResSignIn_Fail_InValidID:
+		TextBlock_Info->SetText(FText::FromString(TEXT("ID가 존재하지 않습니다.")));
+		TextBox_ID->SetText(FText::GetEmpty());
+		TextBox_Password->SetText(FText::GetEmpty());
+		break;
+	case EPacketType::S2C_ResSignIn_Fail_InValidPassword:
+		TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호가 틀립니다.")));
+		TextBox_Password->SetText(FText::GetEmpty());
+		break;
+	case EPacketType::S2C_ResSignIn_Fail_AlreadySignIn:
+		TextBlock_Info->SetText(FText::FromString(TEXT("중복된 로그인입니다!")));
+		TextBox_ID->SetText(FText::GetEmpty());
+		TextBox_Password->SetText(FText::GetEmpty());
+		break;
+	default:
+		break;
+	}
 }

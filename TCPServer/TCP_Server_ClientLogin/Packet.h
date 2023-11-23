@@ -33,6 +33,8 @@ enum class EPacket
 
 	C2S_ReqNewPassword										= 1030,
 	S2C_ResNewPassword										= 1031,
+
+	C2S_ReqSignOut											= 1900,
 	
 	//-------------------------------------------------------------------------------------
 
