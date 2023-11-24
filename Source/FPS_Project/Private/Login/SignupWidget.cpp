@@ -2,7 +2,6 @@
 
 
 #include "Login/SignupWidget.h"
-#include "FPS_Project.h"
 #include "TCPSubsystem.h"
 #include "LoginWidget.h"
 
@@ -62,10 +61,10 @@ void USignupWidget::Button_Signup_Clicked()
 		return;
 	}
 
+	TextBlock_Info->SetText(FText::FromString(TEXT("정보 확인중..")));
+
 	if (TCPSubsystem)
 	{
-		TextBlock_Info->SetText(FText::FromString(TEXT("정보 확인중..")));
-
 		// Payload = "ID:Password:UserName"
 		FString NewUserConfig = NewID + ":" + NewPwd + ":" + NewUsername;
 

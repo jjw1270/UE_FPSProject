@@ -10,11 +10,15 @@
 #include "IPAddress.h"
 
 // Custom Includes
-#include "FPS_project.h"
 #include "MyUtility.h"
 
 void UTCPSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
+	if (!GetIPAndPortFromTxtFile(LoginServerIPPort, TEXT("LoginServerConfig.txt")))
+	{
+		ABLOG(Error, TEXT("Get Login Server Config Failure."));
+	}
+
 	UWorld* World = GetWorld();
 	CHECK_VALID(World);
 
@@ -29,7 +33,7 @@ void UTCPSubsystem::Deinitialize()
 	World->GetTimerManager().ClearTimer(ManageRecvPacketHandle);
 }
 
-bool UTCPSubsystem::GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, const FString& FileName)
+bool UTCPSubsystem::GetIPAndPortFromTxtFile(IPPort& OutIPPort, const FString& FileName)
 {
 	FString IPPortConfig;
 	if (!UMyUtility::GetStringFromTxtFile(FileName, IPPortConfig))
@@ -44,8 +48,8 @@ bool UTCPSubsystem::GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, cons
 	FString TempIP, TempPort;
 	IPPortConfig.Split(":", &TempIP, &TempPort);
 
-	OutIP = TempIP;
-	OutPort = FCString::Atoi(*TempPort);
+	OutIPPort.IP = TempIP;
+	OutIPPort.Port = FCString::Atoi(*TempPort);
 
 	return true;
 }
@@ -75,7 +79,7 @@ FSocket* UTCPSubsystem::Connect(const FString& IP, const int32& PortNum)
 
 	FAddressInfoResult AddressInfoResult = SocketSubsystem->GetAddressInfo(*IP, *FString::FromInt(PortNum), EAddressInfoFlags::CanonicalName, NAME_Stream);
 	
-	if (ClientSocket->Connect(*AddressInfoResult.Results[0].Address))
+	if (AddressInfoResult.ReturnCode != SE_NO_DATA && ClientSocket->Connect(*AddressInfoResult.Results[0].Address))
 	{
 		return ClientSocket;
 	}
@@ -209,15 +213,13 @@ void UTCPSubsystem::DestroySocket(FSocket* TargetSocket)
 
 bool UTCPSubsystem::SendToLoginServer(const FPacketData& SendPacket)
 {
-	FString IP;
-	int32 Port;
-	if (!GetIPAndPortFromTxtFile(IP, Port, TEXT("LoginServerConfig.txt")))
+	if (!LoginServerIPPort.IsValid())
 	{
 		return false;
 	}
 
 	// connect
-	FSocket* ClientSocket = Connect(IP, Port);
+	FSocket* ClientSocket = Connect(LoginServerIPPort.IP, LoginServerIPPort.Port);
 	if (!ClientSocket)
 	{
 		PrintSocketError("Connect");

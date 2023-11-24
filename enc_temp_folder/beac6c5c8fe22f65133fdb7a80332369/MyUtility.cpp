@@ -11,3 +11,8 @@ bool UMyUtility::GetStringFromTxtFile(const FString& FileName, FString& OutStrin
 
 	return FFileHelper::LoadFileToString(OutString, *FilePath);
 }
+
+void UMyUtility::WaitForSec(const float SecForWait)
+{
+	FPlatformProcess::Sleep(SecForWait);
+}

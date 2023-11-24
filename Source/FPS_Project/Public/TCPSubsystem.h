@@ -67,6 +67,23 @@ public:
 	FString Payload;
 };
 
+struct IPPort
+{
+	FString IP;
+	int32 Port;
+
+public:
+	bool IsValid()
+	{
+		if (IP.IsEmpty() || Port == 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
+};
+
 //packetType, payload
 DECLARE_MULTICAST_DELEGATE_TwoParams(FDele_RecvPacket, const EPacketType&, const FString&);
 
@@ -83,7 +100,7 @@ protected:
 	virtual void Deinitialize() override;
 
 protected:
-	bool GetIPAndPortFromTxtFile(FString& OutIP, int32& OutPort, const FString& FileName);
+	bool GetIPAndPortFromTxtFile(IPPort& OutIPPort, const FString& FileName);
 
 protected:
 	void PrintSocketError(const FString& Text);
@@ -101,6 +118,9 @@ public:
 public:
 	bool SendToLoginServer(const FPacketData& SendPacket);
 /*-----------------------------------------------------------*/
+
+protected:
+	IPPort LoginServerIPPort;
 
 protected:
 	FPacketData RecvPacketData;

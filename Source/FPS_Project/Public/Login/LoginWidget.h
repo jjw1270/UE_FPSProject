@@ -44,9 +44,6 @@ protected:
 	class UButton* Button_StartGame;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* Button_GuestStartgame;
-
-	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* TextBlock_Info;
 
 	UPROPERTY(meta = (BindWidget))
@@ -67,9 +64,6 @@ protected:
 
 	UFUNCTION()
 	void Button_StartGame_Clicked();
-
-	UFUNCTION()
-	void Button_GuestStartgame_Clicked();
 
 public:
 	void CloseSignupWidget();

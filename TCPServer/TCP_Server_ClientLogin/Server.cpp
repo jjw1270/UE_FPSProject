@@ -2,6 +2,7 @@
 #include <string>
 #include <list>
 #include <process.h>
+#include <mutex>
 
 using namespace std;
 
@@ -24,6 +25,26 @@ using namespace std;
 sql::Connection* Sql_Connection;
 
 const int HeaderSize = 4;
+
+CRITICAL_SECTION CritSec;
+bool bServerClose = false;
+
+unsigned WINAPI CommandThread(void* arg)
+{
+	string Command;
+	while (true)
+	{
+		cin >> Command;
+
+		if (Command == "Quit")
+		{
+			EnterCriticalSection(&CritSec);
+			bServerClose = true;
+			LeaveCriticalSection(&CritSec);
+			break;
+		}
+	}
+}
 
 void ProcessPacket(SOCKET& ClientSocket, const EPacket& PacketType, char*& Payload)
 {
@@ -396,6 +417,10 @@ int main()
 
 	cout << "Success!" << endl;
 
+	InitializeCriticalSection(&CritSec);
+
+	_beginthreadex(nullptr, 0, CommandThread, nullptr, 0, nullptr);
+
 	while (true)
 	{
 		SOCKADDR_IN ClientSocketAddr;
@@ -407,6 +432,12 @@ int main()
 		{
 			cout << "Accept Error : " << GetLastError() << endl;
 			continue;
+		}
+
+		if (bServerClose)
+		{
+			cout << "Close Server";
+			break;
 		}
 
 		char IP[1024] = { 0, };
@@ -422,6 +453,8 @@ int main()
 	WSACleanup();
 
 	delete Sql_Connection;
+
+	DeleteCriticalSection(&CritSec);
 
 	system("pause");
 

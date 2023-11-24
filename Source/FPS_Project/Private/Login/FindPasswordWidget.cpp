@@ -2,7 +2,6 @@
 
 
 #include "Login/FindPasswordWidget.h"
-#include "FPS_Project.h"
 #include "TCPSubsystem.h"
 #include "LoginWidget.h"
 
@@ -42,10 +41,10 @@ void UFindPasswordWidget::Button_IDName_Clicked()
 	FString ID = TextBox_ID->GetText().ToString();
 	FString Username = TextBox_Username->GetText().ToString();
 
+	TextBlock_Info->SetText(FText::FromString(TEXT("정보 확인중..")));
+
 	if (TCPSubsystem)
 	{
-		TextBlock_Info->SetText(FText::FromString(TEXT("정보 확인중..")));
-
 		// Payload = "ID:UserName"
 		FString UserIDName = ID + ":" + Username;
 
@@ -70,10 +69,10 @@ void UFindPasswordWidget::Button_Password_Clicked()
 		return;
 	}
 
+	TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호 변경 요청중..")));
+
 	if (TCPSubsystem)
 	{
-		TextBlock_Info->SetText(FText::FromString(TEXT("비밀번호 변경 요청중..")));
-
 		// Payload = "ID:Password"
 		FString UserIDPassword = TextBox_ID->GetText().ToString() + ":" + NewPwd;
 

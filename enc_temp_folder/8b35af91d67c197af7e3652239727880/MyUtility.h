@@ -32,4 +32,5 @@ class FPS_PROJECT_API UMyUtility : public UObject
 public:
 	static bool GetStringFromTxtFile(const FString& FileName, FString& OutString);
 
+	static void WaitForSec(const float SecForWait);
 };

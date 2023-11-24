@@ -127,13 +127,11 @@ void ULoginWidget::OnRecvPacket(const EPacketType& PacketType, const FString& Pa
 		UFPSProjectGameInstance* GI = GetGameInstance<UFPSProjectGameInstance>();
 		CHECK_VALID(GI);
 		GI->SetUserID(Payload);
-		TextBlock_Info->SetText(FText::FromString(TEXT("로그인 성공!")));
 		ShowSuccessPopup(TEXT("로그인 성공!"));
-
-		FTimerHandle OpenLevelTM;
-		GetWorld()->GetTimerManager().SetTimer(OpenLevelTM, [&]() {UGameplayStatics::OpenLevel(GetWorld(), TEXT("LobbyLevel")); }, 1.f, false);
+		UMyUtility::WaitForSec(3.f);
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("LobbyLevel"));
 	}
-	break;
+		break;
 	case EPacketType::S2C_ResSignIn_Fail_InValidID:
 		TextBlock_Info->SetText(FText::FromString(TEXT("ID가 존재하지 않습니다.")));
 		TextBox_ID->SetText(FText::GetEmpty());
